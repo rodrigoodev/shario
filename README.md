@@ -1,9 +1,9 @@
 # Coisas para fazer
 
-[] Upload de arquivos
-[] Visualizador de postagem
-[] Moderador
-[] Auth
+[ ] Upload de arquivos
+[ ] Visualizador de postagem
+[ ] Moderador
+[ ] Auth
 
 # Nuxt 3 Minimal Starter
 
