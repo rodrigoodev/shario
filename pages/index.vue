@@ -13,24 +13,24 @@
       </div>
     </div>
     <div class="user">
-      <Chip label="Rodrigo Gabriel" image="/assets/images/rodrigo.jpg" />
-      <Button label="Logout" icon="pi pi-power-off" />
+      <Chip :label="store.user?.email" image="/assets/images/rodrigo.jpg" />
+      <Button label="Logout" icon="pi pi-power-off" @click="logout" />
     </div>
   </Header>
 
   <main>
     <h2>Aqui estão os materiais mais recentes</h2>
     <div class="wrap-conteudo">
-      <a href="#" class="conteudo" v-for="x in 5">
+      <a href="#" class="conteudo" v-for="material in materials">
         <div class="conteudo-header">
           <div class="conteudo-logo">
             <img src="/assets/images/rodrigo.jpg" />
           </div>
 
-          Atividade de historia - anos iniciais
+          {{ material.titulo }} - {{ material.materia }}
         </div>
         <div class="conteudo-info">
-          <span>Publicado em 12/09/2021</span>
+          <span>Publicado em {{ material.created_at }}</span>
           <span>3 min de leitura</span>
         </div>
       </a>
@@ -92,15 +92,41 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
-import { useRouter } from "vue-router";
-import Menu from "primevue/menu";
+import { useGlobalStore } from "~/store/globalStore.js";
+import { useSupabaseClient } from "#imports";
+
+interface IMaterial {
+  id: string;
+  titulo: string;
+  file: string;
+  materia: string;
+  bncc: string;
+  created_at: string;
+}
+
+const store = useGlobalStore();
+const supabaseClient = useSupabaseClient();
 
 const menu = ref(null);
 const toast = useToast();
-const router = useRouter();
-const value = ref({ label: "", icon: "" });
 
 const visible = ref(false);
+
+function logout() {
+  supabaseClient.auth.signOut();
+  store.setUser({
+    id: undefined,
+    email: undefined,
+  });
+  navigateTo("/login");
+}
+
+//get material from supabase table
+const { data: materials } = await useAsyncData("material", async () => {
+  const { data } = await supabaseClient.from("material").select();
+
+  return data;
+});
 
 onMounted(() => {
   countries.value = [
